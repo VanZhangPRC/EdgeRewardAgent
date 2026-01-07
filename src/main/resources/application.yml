@@ -2,3 +2,4 @@ van:
   project:
     rewardAgent:
       edge-user-dir: C:\Users\vanzh\AppData\Local\Microsoft\Edge\User Data
+      edge-user-profile: Default_Automation

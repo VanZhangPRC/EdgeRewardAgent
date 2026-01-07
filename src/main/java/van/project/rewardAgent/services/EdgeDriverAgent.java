@@ -6,7 +6,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -19,6 +18,8 @@ public class EdgeDriverAgent {
 
     @Value("${van.project.rewardAgent.edge-user-dir}")
     private String userDataDir;
+    @Value("${van.project.rewardAgent.edge-user-profile}")
+    private String userProfile;
 
     private EdgeDriver createDriver() throws IOException {
         return createDriver(false);
@@ -30,15 +31,15 @@ public class EdgeDriverAgent {
 
 //        options.setBinary("B:\\WorkSpace\\van-s-project\\RewardAgent\\src\\main\\resources\\edgedriver_win64\\msedgedriver.exe");
 
-        // TODO. 自动登录浏览器
+        // 自动登录浏览器
         // 使用已存在的用户数据目录
-        options.addArguments("--user-data-dir=C:\\Users\\vanzh\\AppData\\Local\\Microsoft\\Edge\\User Data");
+        options.addArguments("--user-data-dir=" + userDataDir);
         // 指定具体 Profile（很重要）
-        options.addArguments("--profile-directory=Default");
+        options.addArguments("--profile-directory="+ userProfile);
 
         // 可选：关闭自动化提示
-        /*options.addArguments("--disable-infobars");
-        options.addArguments("--disable-blink-features=AutomationControlled");*/
+        options.addArguments("--disable-infobars");
+        options.addArguments("--disable-blink-features=AutomationControlled");
 
         if (isMobile) {
             options.setExperimentalOption("mobileEmulation", Collections.singletonMap("deviceName", "iPhone 14 Pro Max"));
@@ -49,10 +50,17 @@ public class EdgeDriverAgent {
 
     private void search(EdgeDriver driver, List<String> keywords) {
         driver.navigate().to("https://cn.bing.com/");
-        // todo. 尝试点击用户界面获取积分信息，似乎需要点击一次才能使积分生效
+
         WebElement element = driver.findElement(By.id("sb_form_q"));
         element.sendKeys(String.join(" ", keywords));
         element.submit();
+
+        // todo. 尝试点击用户界面获取积分信息，似乎需要点击一次才能使积分生效
+        try {
+            driver.findElement(By.id("id_rh_w")).click();
+        } catch (Exception e) {
+            driver.findElement(By.id("mHamburger")).click();
+        }
 
         try {
             Thread.sleep(7000);
