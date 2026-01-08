@@ -55,7 +55,7 @@ public class EdgeDriverAgent {
         element.sendKeys(String.join(" ", keywords));
         element.submit();
 
-        // todo. 尝试点击用户界面获取积分信息，似乎需要点击一次才能使积分生效
+        // 尝试点击用户界面获取积分信息，手机端第一次搜索似乎需要点击一次才能使积分生效，也可能是错觉
         try {
             driver.findElement(By.id("id_rh_w")).click();
         } catch (Exception e) {
