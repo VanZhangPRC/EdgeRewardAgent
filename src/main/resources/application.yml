@@ -2,4 +2,12 @@ van:
   project:
     rewardAgent:
       edge-user-dir: C:\Users\vanzh\AppData\Local\Microsoft\Edge\User Data
-      edge-user-profile: Default_Automation
+      edge-user-profile: Default
+      keywords-mode: deepseek # deepseek | local
+spring:
+  main:
+    web-application-type: none
+  ai:
+    deepseek:
+      base-url: https://api.deepseek.com/v1
+      api-key: 
