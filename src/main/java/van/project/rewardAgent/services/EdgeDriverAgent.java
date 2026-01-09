@@ -57,7 +57,10 @@ public class EdgeDriverAgent {
 
         // 尝试点击用户界面获取积分信息，手机端第一次搜索似乎需要点击一次才能使积分生效，也可能是错觉
         try {
+            Thread.sleep(1000);
             driver.findElement(By.id("id_rh_w")).click();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         } catch (Exception e) {
             driver.findElement(By.id("mHamburger")).click();
         }

@@ -9,7 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -25,7 +28,10 @@ public class EdgeService {
 
     private Keywords getKeywords() throws IOException {
         // TODO. 修改为自动获取热搜词
-        return objectMapper.readValue(newsKeywords.getFile(), new TypeReference<Keywords>() {
+        String keywordData = new BufferedReader(new InputStreamReader(newsKeywords.getInputStream()))
+                .lines()
+                .collect(Collectors.joining());
+        return objectMapper.readValue(keywordData, new TypeReference<Keywords>() {
         });
     }
 
@@ -35,6 +41,7 @@ public class EdgeService {
     public void start() throws IOException {
 
         Keywords keywords = getKeywords();
+        log.info("get keywords: {}", keywords);
         agent.searchWeb(keywords);
         agent.searchMobile(keywords);
     }
