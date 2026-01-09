@@ -29,3 +29,89 @@
 
 1. 由于浏览器的安全机制不允许同时在2个客户端登录同样的账号，也就无法在浏览器打开并登录账号的情况下运行程序，如果在已打开多个标签页并且不想关闭的情况下，无法运行程序
    1. 尝试过复制用户数据文件夹的方法，没有效果
+
+# 附录
+## Windows 环境下切换JDK环境方式
+
+### Jabba
+
+使用第三方工具 [Jabba](https://github.com/shyiko/jabba)
+
+### Batch 脚本
+
+自己编写Batch脚本进行管理
+
+```batch
+@echo off
+setlocal EnableExtensions EnableDelayedExpansion
+
+:: ==================================================
+:: JDK 映射表（在这里维护即可）
+:: ==================================================
+:: 格式：
+::   set JDK_<name>=<absolute_path>
+::
+:: 示例：
+set JDK_jdk8=C:\ProgramFiles\Java\jdk1.8.0_211
+set JDK_jdk11=C:\ProgramFiles\Java\openjdk-11.0.0.1_windows-x64_bin\jdk-11.0.0.1
+set JDK_jdk17=C:\ProgramFiles\Java\openjdk-17+35_windows-x64_bin\jdk-17
+set JDK_jdk24=C:\ProgramFiles\Java\openjdk-24_windows-x64_bin\jdk-24
+
+:: ==================================================
+:: 参数校验
+:: ==================================================
+if "%~1"=="" (
+    echo Usage: switchjdk jdk8 ^| jdk11 ^| jdk17 ^| jdk24
+    exit /b 1
+)
+
+set "JDK_KEY=JDK_%~1"
+
+:: ==================================================
+:: 从映射表取路径
+:: ==================================================
+for %%A in (!JDK_KEY!) do set "JDK_PATH=!%%A!"
+
+if not defined JDK_PATH (
+    echo [ERROR] Unknown JDK key: %~1
+    echo.
+    echo Available options:
+    echo   jdk8
+    echo   jdk11
+    echo   jdk17
+    echo   jdk24
+    exit /b 1
+)
+
+:: ==================================================
+:: 校验 JDK 是否有效
+:: ==================================================
+if not exist "%JDK_PATH%\bin\java.exe" (
+    echo [ERROR] Invalid JDK path:
+    echo   %JDK_PATH%
+    exit /b 1
+)
+
+:: ==================================================
+:: 设置系统环境变量
+:: ==================================================
+setx JAVA_HOME "%JDK_PATH%" /M >nul
+
+:: ==================================================
+:: 输出结果
+:: ==================================================
+echo ----------------------------------------
+echo JAVA_HOME switched to:
+echo   %JDK_PATH%
+echo ----------------------------------------
+echo.
+echo NOTE:
+echo   1. Effective in NEW terminals only
+echo   2. Run CMD as Administrator
+echo ----------------------------------------
+
+endlocal
+```
+
+将脚本命名为 `switchjdk`，在管理员模式下的 cmd 中运行 `switchjdk jdk17` 可以设置`JAVA_HOME`环境变量，
+从而达到切换JDK环境的目的。**需要注意，环境变量设置后，需要新打开命令行窗口才能生效**
